@@ -1,0 +1,31 @@
+{
+  "name": "personal_budget",
+  "version": "0.0.1",
+  "description": "An API created for interacting with the database. It performs Crud Operations",
+  "keywords": [
+    "Express",
+    "serverful",
+    "JavaScript",
+    "MongoDB",
+    "API",
+    "Back-End"
+  ],
+  "homepage": "https://github.com/Colin-Stark/personal_budget#readme",
+  "bugs": {
+    "url": "https://github.com/Colin-Stark/personal_budget/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Colin-Stark/personal_budget.git"
+  },
+  "license": "ISC",
+  "author": "COLLINS OLOKPEDJE",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

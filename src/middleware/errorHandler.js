@@ -1,4 +1,4 @@
-function errorHandler(err, req, res, next) {
+function errorHandler(err, req, res, _next) {
     /* eslint-disable no-console */
     console.error(err);
     const status = err.status || 500;

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const Transaction = require('../../../src/models/transaction');
-const { createTransaction, listTransactions, softDeleteTransaction } = require('../../../src/services/transactionService');
+const { createTransaction, softDeleteTransaction } = require('../../../src/services/transactionService');
 
 let mongo;
 beforeAll(async () => {

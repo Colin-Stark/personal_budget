@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const Budget = require('../../../src/models/budget');
 const { createOrUpdateBudget, listBudgets, deleteBudget } = require('../../../src/services/budgetService');
 
 let mongo;

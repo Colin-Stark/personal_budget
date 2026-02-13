@@ -16,6 +16,7 @@ afterAll(async () => {
 
 describe('Summaries', () => {
     let token;
+    let userId;
     beforeAll(async () => {
         await request(app).post('/api/v1/auth/register').send({ email: 'sum@example.com', password: 'pw1234', displayName: 'S' });
         const res = await request(app).post('/api/v1/auth/login').send({ email: 'sum@example.com', password: 'pw1234' });

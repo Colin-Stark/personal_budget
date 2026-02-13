@@ -31,12 +31,12 @@ describe('budgetService defensive checks', () => {
 
     test('createOrUpdateBudget upserts and returns document for valid input', async () => {
         const userId = new mongoose.Types.ObjectId();
-        const categoryId = new mongoose.Types.ObjectId();
+        const categoryId = new mongoose.Types.ObjectId().toString();
         const res = await createOrUpdateBudget(userId, { categoryId, month: '2024-01', amount: 150 });
         expect(res).toHaveProperty('_id');
         const list = await listBudgets(userId);
         expect(list.length).toBe(1);
-        await deleteBudget(userId, res._id);
+        await deleteBudget(userId, res._id.toString());
         const after = await listBudgets(userId);
         expect(after.length).toBe(0);
     });

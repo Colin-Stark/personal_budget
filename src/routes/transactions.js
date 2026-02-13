@@ -1,8 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
+const rateLimit = require('express-rate-limit');
 const { validateBody, Joi } = require('../middleware/validation');
 const { createTransaction, listTransactions, softDeleteTransaction } = require('../services/transactionService');
+
+const transactionsLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs for transaction routes
+});
+
+router.use(transactionsLimiter);
 
 const transactionSchema = Joi.object({
     accountId: Joi.string().required(),

@@ -15,7 +15,7 @@ async function createOrUpdateBudget(userId, { categoryId, month, amount }) {
         month: { $eq: month }
     };
     const update = { amount };
-    const opts = { upsert: true, new: true, setDefaultsOnInsert: true };
+    const opts = { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true };
     return Budget.findOneAndUpdate(filter, update, opts).exec();
 }
 

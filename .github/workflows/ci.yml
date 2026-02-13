@@ -21,5 +21,11 @@ jobs:
         run: npm run lint
       - name: Run tests
         run: npm test
+      - name: Run contract tests
+        run: npx jest tests/contract --runInBand
       - name: Npm audit
         run: npm audit --audit-level=moderate || true
+      - name: Secret scan (gitleaks)
+        uses: zricethezav/gitleaks-action@v2
+        with:
+          args: --exit-code 1 --redact

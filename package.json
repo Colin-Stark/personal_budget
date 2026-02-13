@@ -36,7 +36,7 @@
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
     "express-rate-limit": "^6.11.2",
-    "joi": "^17.9.2",
+    "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.0",
     "winston": "^3.9.0"

@@ -39,7 +39,7 @@ describe('Summaries', () => {
     const inserts = [];
     const uid = new mongoose.Types.ObjectId(userId);
     for (let i = 0; i < 1000; i++) {
-      inserts.push(Transaction.create({ userId: uid, accountId, date: new Date('2026-02-15'), amount: 1 }));
+      inserts.push(Transaction.create({ userId: uid, accountId, date: new Date('2026-02-15'), amount: 1, idempotencyKey: `perf-${i}` }));
     }
     await Promise.all(inserts);
 

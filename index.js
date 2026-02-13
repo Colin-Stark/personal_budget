@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3000;
 async function start() {
   try {
     const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/personal_budget_dev';
-    await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(uri);
     logger.info('Connected to MongoDB');
     app.listen(PORT, () => logger.info(`Server listening on port ${PORT}`));
   } catch (err) {

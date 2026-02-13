@@ -1,0 +1,191 @@
+openapi: 3.0.3
+info:
+  title: Personal Budget API
+  version: 0.1.0
+  description: API for managing personal budgets, transactions, categories and summaries.
+servers:
+  - url: http://localhost:3000/api/v1
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                displayName:
+                  type: string
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: Validation error
+  /auth/login:
+    post:
+      summary: Login and receive JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Authenticated (returns token)
+        '401':
+          description: Invalid credentials
+  /transactions:
+    post:
+      summary: Create transaction (idempotent with optional idempotencyKey)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionInput'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Validation error
+    get:
+      summary: List transactions (paginated)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: page
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of transactions
+  /transactions/{id}:
+    put:
+      summary: Update transaction
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionInput'
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete transaction
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted
+  /summaries/monthly:
+    get:
+      summary: Monthly summary for authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: year
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: month
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Summary object
+  /export:
+    get:
+      summary: Export transactions for date range
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum: [json,csv]
+      responses:
+        '200':
+          description: File or JSON payload
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    TransactionInput:
+      type: object
+      required: [accountId, date, amount]
+      properties:
+        accountId:
+          type: string
+        date:
+          type: string
+          format: date-time
+        amount:
+          type: number
+        currency:
+          type: string
+        categoryId:
+          type: string
+        description:
+          type: string
+        idempotencyKey:
+          type: string

@@ -18,8 +18,10 @@ afterAll(async () => {
 describe('Transactions', () => {
   let token;
   beforeAll(async () => {
-    await request(app).post('/api/v1/auth/register').send({ email: 'bob@example.com', password: 'pw', displayName: 'Bob' });
-    const res = await request(app).post('/api/v1/auth/login').send({ email: 'bob@example.com', password: 'pw' });
+    await request(app).post('/api/v1/auth/register').send({ email: 'bob@example.com', password: 'pw1234', displayName: 'Bob' });
+    const res = await request(app).post('/api/v1/auth/login').send({ email: 'bob@example.com', password: 'pw1234' });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('token');
     token = res.body.token;
   });
 

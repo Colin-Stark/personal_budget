@@ -1,9 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
+const { validateBody, Joi } = require('../middleware/validation');
 const { createTransaction, listTransactions, softDeleteTransaction } = require('../services/transactionService');
 
-router.post('/', auth, async (req, res) => {
+const transactionSchema = Joi.object({
+  accountId: Joi.string().required(),
+  date: Joi.date().iso().required(),
+  amount: Joi.number().required(),
+  currency: Joi.string().optional(),
+  categoryId: Joi.string().optional(),
+  description: Joi.string().optional(),
+  idempotencyKey: Joi.string().optional()
+});
+
+router.post('/', auth, validateBody(transactionSchema), async (req, res) => {
   try {
     const payload = Object.assign({}, req.body);
     const tx = await createTransaction(req.user._id, payload);

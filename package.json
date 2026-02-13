@@ -35,13 +35,14 @@
     "cors": "^2.8.6",
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
+    "express-rate-limit": "^6.11.2",
+    "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.0",
-    "winston": "^3.9.0",
-    "joi": "^17.9.2"
+    "winston": "^3.9.0"
   },
   "devDependencies": {
-    "ajv": "^8.12.0",
+    "ajv": "^8.17.1",
     "eslint": "^8.0.0",
     "eslint-config-prettier": "^8.0.0",
     "eslint-plugin-jest": "^27.0.0",

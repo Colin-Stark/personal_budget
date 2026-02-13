@@ -147,6 +147,30 @@ paths:
       responses:
         '200':
           description: Summary object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totals:
+                    type: number
+                  byCategory:
+                    type: object
+                    additionalProperties:
+                      type: number
+                  budgets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        categoryId:
+                          type: string
+                        budget:
+                          type: number
+                        spent:
+                          type: number
+                        percent:
+                          type: number
   /export:
     get:
       summary: Export transactions for date range

@@ -9,7 +9,9 @@ const summaryLimiter = rateLimit({
     max: 100, // limit each IP to 100 requests per windowMs
 });
 
-router.get('/monthly', auth, summaryLimiter, async (req, res) => {
+router.use(summaryLimiter);
+
+router.get('/monthly', auth, async (req, res) => {
     const year = parseInt(req.query.year, 10);
     const month = parseInt(req.query.month, 10);
     if (!year || !month) return res.status(400).json({ message: 'year and month required' });

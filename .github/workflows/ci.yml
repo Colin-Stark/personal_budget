@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main, '001-budget-api']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install libssl1.1
+        run: wget -qO- https://deb.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1w-0+deb11u1_amd64.deb | sudo dpkg -i -
+      - name: Install dependencies
+        run: cd .. && npm ci
+      - name: Lint
+        run: cd .. && npm run lint
+      - name: Run tests
+        run: cd .. && npm test
+      - name: Run contract tests
+        run: cd .. && npx jest tests/contract --runInBand
+      - name: Npm audit
+        run: cd .. && npm audit --audit-level=moderate || true
+      - name: Secret scan (gitleaks)
+        uses: zricethezav/gitleaks-action@v2
+        with:
+          args: --exit-code 1 --redact

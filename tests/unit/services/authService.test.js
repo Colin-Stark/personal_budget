@@ -1,14 +1,11 @@
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+const mongo = require('../../helpers/mongo');
 const { register, authenticate, refreshTokens, logout } = require('../../../src/services/authService');
 
-let mongo;
 beforeAll(async () => {
-    mongo = await MongoMemoryServer.create();
-    await mongoose.connect(mongo.getUri());
+    await mongo.start();
 });
 afterAll(async () => {
-    await mongoose.disconnect();
     await mongo.stop();
 });
 

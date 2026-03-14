@@ -1,15 +1,12 @@
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+const mongo = require('../../helpers/mongo');
 const Transaction = require('../../../src/models/transaction');
 const { createTransaction, softDeleteTransaction } = require('../../../src/services/transactionService');
 
-let mongo;
 beforeAll(async () => {
-    mongo = await MongoMemoryServer.create();
-    await mongoose.connect(mongo.getUri());
+    await mongo.start();
 });
 afterAll(async () => {
-    await mongoose.disconnect();
     await mongo.stop();
 });
 

@@ -1,14 +1,11 @@
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const { createOrUpdateBudget, listBudgets, deleteBudget } = require('../../../src/services/budgetService');
 
-let mongo;
+const mongo = require('../../helpers/mongo');
 beforeAll(async () => {
-    mongo = await MongoMemoryServer.create();
-    await mongoose.connect(mongo.getUri());
+    await mongo.start();
 });
 afterAll(async () => {
-    await mongoose.disconnect();
     await mongo.stop();
 });
 

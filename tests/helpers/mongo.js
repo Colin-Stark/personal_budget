@@ -1,7 +1,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI || process.env.CI_MONGO_URI;
 if (!MONGO_URI) {
     throw new Error('MONGO_URI must be set in environment (e.g. in .env)');
 }

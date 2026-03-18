@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const mongo = require('../../helpers/mongo');
 const { register, authenticate, refreshTokens, logout } = require('../../../src/services/authService');
 
@@ -6,7 +5,14 @@ beforeAll(async () => {
     await mongo.start();
 });
 afterAll(async () => {
-    await mongo.stop();
+    const User = require('../../../src/models/user');
+    try {
+        await User.deleteOne({ email: 'u1@example.com' });
+    } catch (e) {
+        // ignore cleanup errors
+    } finally {
+        await mongo.stop();
+    }
 });
 
 describe('authService unit-like tests', () => {

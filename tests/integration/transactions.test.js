@@ -8,7 +8,19 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await mongo.stop();
+    const User = require('../../src/models/user');
+    const Transaction = require('../../src/models/transaction');
+    try {
+        const user = await User.findOne({ email: 'bob@example.com' }).exec();
+        if (user) {
+            await Transaction.deleteMany({ userId: user._id });
+            await User.deleteOne({ _id: user._id });
+        }
+    } catch (e) {
+        // ignore cleanup errors
+    } finally {
+        await mongo.stop();
+    }
 });
 
 describe('Transactions', () => {

@@ -8,7 +8,24 @@ beforeAll(async () => {
     await mongo.start();
 });
 afterAll(async () => {
-    await mongo.stop();
+    const User = require('../../src/models/user');
+    const Transaction = require('../../src/models/transaction');
+    try {
+        const user = await User.findOne({ email: 'sum@example.com' }).exec();
+        if (user) {
+            // remove transactions for this user (including perf inserts)
+            await Transaction.deleteMany({ userId: user._id });
+            await Transaction.deleteMany({ idempotencyKey: { $regex: '^perf-' } });
+            await User.deleteOne({ _id: user._id });
+        } else {
+            // still try to remove perf_* transactions if any
+            await Transaction.deleteMany({ idempotencyKey: { $regex: '^perf-' } });
+        }
+    } catch (e) {
+        // ignore cleanup errors
+    } finally {
+        await mongo.stop();
+    }
 });
 
 describe('Summaries', () => {

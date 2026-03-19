@@ -12,5 +12,4 @@ const mongoUri = process.env.MONGO_URI || process.env.CI_MONGO_URI;
 if (!mongoUri) {
     throw new Error('MONGO_URI must be set in environment for tests');
 }
-// ensure downstream code sees `MONGO_URI`
 process.env.MONGO_URI = mongoUri;

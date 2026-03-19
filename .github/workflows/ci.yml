@@ -10,7 +10,9 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
       CI_JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      MONGO_URI: ${{ secrets.MONGO_URI }}
       CI_MONGO_URI: ${{ secrets.MONGO_URI }}
     steps:
       - uses: actions/checkout@v4

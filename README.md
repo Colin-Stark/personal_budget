@@ -335,8 +335,7 @@ personal_budget/
 │   └── workflows/
 │       ├── ci.yml        # Lint, test, gitleaks scan
 │       └── codeql-analysis.yml # Security scanning
-├── server.js             # Local server entry point
-├── index.js              # (git-renamed to server.js)
+├── server.js             # Local server entry point (was index.js)
 ├── vercel.json           # Vercel routing config
 ├── package.json
 ├── jest.config.cjs

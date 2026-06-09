@@ -77,6 +77,11 @@
 
 ## Requirements *(mandatory)*
 
+> Constitution compliance: every feature spec MUST include acceptance criteria and tests
+> that demonstrate compliance with the constitution's principles (code quality, testing,
+> security, UX consistency, performance). If a principle is intentionally NOT APPLICABLE,
+> the spec MUST justify and document the exception.
+
 <!--
   ACTION REQUIRED: The content in this section represents placeholders.
   Fill them out with the right functional requirements.

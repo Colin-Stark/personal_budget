@@ -7,25 +7,19 @@
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Build a serveful Express.js API for a personal budget tracker that supports transaction CRUD, per-user data isolation, category/budget management, monthly summaries, recurring transactions and exports. Persist using MongoDB (Mongoose), secure endpoints with email/password + JWT, and follow a test-first approach (Jest + Supertest). API contracts will be provided as OpenAPI; CI will enforce lint, tests, and dependency/security scans.
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
-
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: Node.js 20.x (LTS)  
+**Primary Dependencies**: Express 5.x, Mongoose, dotenv, cors, jsonwebtoken, bcrypt, joi (validation), winston (logging), eslint + prettier  
+**Storage**: MongoDB (Atlas or self-hosted); Mongoose for schema & validation  
+**Testing**: Jest + Supertest for unit & integration tests; use an in-memory MongoDB instance for CI integration tests (mongodb-memory-server)  
+**Target Platform**: Linux server / Docker (development on Windows/macOS supported)  
+**Project Type**: Single backend API (serveful Express application)  
+**Performance Goals**: p95 latency for transaction CRUD ≤ 2s (light load); monthly summary (≤1,000 transactions) p95 ≤ 1s in acceptance environment  
+**Constraints**: Secrets via environment variables; no secrets in repo; API returns JSON; initial scope single-currency per account; idempotent transaction creation supported via client-provided idempotency key  
+**Scale/Scope**: MVP-level scale (hundreds → low thousands of users); design for horizontal scaling (stateless API + shared DB)
 
 ## Constitution Check
 

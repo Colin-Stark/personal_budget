@@ -7,7 +7,6 @@ let connected = false;
 async function ensureConnected() {
   if (connected) return;
   if (connecting) {
-    // wait for in-flight connection (up to 10s)
     for (let i = 0; i < 20; i++) {
       await new Promise(r => setTimeout(r, 500));
       if (connected) return;
@@ -20,12 +19,12 @@ async function ensureConnected() {
     if (!uri) throw new Error('MONGO_URI is not set');
     await mongoose.connect(uri);
     connected = true;
-    connecting = false;
     console.log('MongoDB connected (serverless)');
   } catch (err) {
-    connecting = false;
     console.error('MongoDB connection failed:', err.message);
     throw err;
+  } finally {
+    connecting = false;
   }
 }
 

@@ -14,7 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// apply rate-limit to auth endpoints
+// rate-limit authenticated/top-level auth routes only; leave resource routes alone for now
 app.use('/api/v1/auth', rateLimit.authLimiter);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
@@ -24,19 +24,21 @@ app.use('/api/v1/summaries', summariesRoutes);
 const PORT = process.env.PORT || 3000;
 
 async function start() {
-    try {
-        const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/personal_budget_dev';
-        await mongoose.connect(uri);
-        logger.info('Connected to MongoDB');
-        app.listen(PORT, () => logger.info(`Server listening on port ${PORT}`));
-    } catch (err) {
-        logger.error('Failed to start app', err);
-        process.exit(1);
-    }
+  try {
+    const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/personal_budget_dev';
+    await mongoose.connect(uri);
+    logger.info('Connected to MongoDB');
+    app.listen(PORT, () => logger.info(`Server listening on port ${PORT}`));
+  } catch (err) {
+    logger.error('Failed to start app', err);
+    process.exit(1);
+  }
 }
 
-if (require.main === module) {
-    start();
-}
-
+// Always export the app so it can be used for testing and serverless
 module.exports = app;
+
+// Only start the HTTP listener when run directly (not imported)
+if (require.main === module) {
+  start();
+}

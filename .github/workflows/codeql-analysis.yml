@@ -2,9 +2,9 @@ name: 'CodeQL'
 
 on:
   push:
-    branches: [main, '001-budget-api', '001-budget-api-hardening-tests']
+    branches: [main]
   pull_request:
-    branches: [main, '001-budget-api-hardening-tests']
+    branches: [main]
 
 permissions:
   contents: read

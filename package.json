@@ -42,7 +42,6 @@
     "winston": "^3.9.0"
   },
   "devDependencies": {
-    "@vercel/node": "^5.8.14",
     "ajv": "^8.17.1",
     "eslint": "^8.0.0",
     "eslint-config-prettier": "^8.0.0",

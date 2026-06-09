@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const app = require('../index');
+const app = require('../server');
 
 let connecting = false;
 let connected = false;

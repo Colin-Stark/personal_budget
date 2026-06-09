@@ -2,7 +2,7 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const Ajv = require('ajv');
 const request = require('supertest');
-const app = require('../../index');
+const app = require('../../server');
 
 const spec = yaml.load(fs.readFileSync('./specs/001-budget-api/contracts/openapi.yaml', 'utf8'));
 const ajv = new Ajv();

@@ -1,6 +1,6 @@
 const request = require('supertest');
 const mongo = require('../helpers/mongo');
-const app = require('../../index');
+const app = require('../../server');
 
 beforeAll(async () => {
     await mongo.start();

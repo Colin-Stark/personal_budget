@@ -1,7 +1,7 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
 const mongo = require('../helpers/mongo');
-const app = require('../../index');
+const app = require('../../server');
 const Transaction = require('../../src/models/transaction');
 
 beforeAll(async () => {

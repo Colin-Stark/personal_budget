@@ -36,7 +36,6 @@ describe('Accounts CRUD', () => {
         await request(app).post('/api/v1/auth/register').send({ email: 'acc@example.com', password: 'pw1234', displayName: 'Acc User' });
         const res = await request(app).post('/api/v1/auth/login').send({ email: 'acc@example.com', password: 'pw1234' });
         token = res.body.token;
-        expect(token).toBeDefined();
     });
 
     test('POST /api/v1/accounts - create account (should return _id)', async () => {

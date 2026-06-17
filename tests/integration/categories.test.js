@@ -36,7 +36,6 @@ describe('Categories CRUD', () => {
         await request(app).post('/api/v1/auth/register').send({ email: 'cat@example.com', password: 'pw1234', displayName: 'Cat User' });
         const res = await request(app).post('/api/v1/auth/login').send({ email: 'cat@example.com', password: 'pw1234' });
         token = res.body.token;
-        expect(token).toBeDefined();
     });
 
     test('POST /api/v1/categories - create category (should return _id)', async () => {

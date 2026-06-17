@@ -1,0 +1,1 @@
+- [Categories API Tests](categories_test.md) — Comprehensive CRUD integration tests for /api/v1/categories endpoints (24 tests, all passing)

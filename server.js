@@ -8,6 +8,8 @@ const rateLimit = require('./src/middleware/rateLimit');
 const authRoutes = require('./src/routes/auth');
 const transactionRoutes = require('./src/routes/transactions');
 const budgetsRoutes = require('./src/routes/budgets');
+const categoriesRoutes = require('./src/routes/categories');
+const accountsRoutes = require('./src/routes/accounts');
 const summariesRoutes = require('./src/routes/summaries');
 
 const app = express();
@@ -19,6 +21,8 @@ app.use('/api/v1/auth', rateLimit.authLimiter);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
 app.use('/api/v1/budgets', budgetsRoutes);
+app.use('/api/v1/categories', categoriesRoutes);
+app.use('/api/v1/accounts', accountsRoutes);
 app.use('/api/v1/summaries', summariesRoutes);
 
 const PORT = process.env.PORT || 3000;

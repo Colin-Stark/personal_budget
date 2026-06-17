@@ -7,12 +7,15 @@ A Node.js/Express/MongoDB REST API for personal budget tracking. Supports user a
 ## Features
 
 - **Authentication** — Register, login, JWT access tokens (15 min), refresh tokens with rotation, logout
+- **Accounts** — Create, list, get, update, delete accounts (checking, savings, credit, cash, investment, other) with server-generated IDs
+- **Categories** — Create, list, get, update, delete categories with server-generated IDs
 - **Budgets** — Create/update (upsert), list, delete monthly budgets per category
 - **Transactions** — Create, list, soft-delete with idempotency keys to prevent duplicates
 - **Summaries** — Monthly totals and per-category breakdown with budget progress
-- **Rate limiting** — Auth endpoints: 10 req/min; budget endpoints: 100 req/15 min
+- **Rate limiting** — Auth endpoints: 10 req/min; resource endpoints: 100 req/15 min
 - **Input validation** — Joi schemas on all write endpoints
 - **Security** — Bcrypt password hashing, hashed refresh tokens, query-object injection defense, no raw error leakage in production
+- **Referential integrity** — Prevents deletion of accounts/categories in use by transactions or budgets
 
 ---
 
@@ -27,6 +30,8 @@ graph TD
     RateMW["Rate Limiter"]
     ValidateMW["Joi Validation"]
     AuthSvc["Auth Service"]
+    AccountSvc["Account Service"]
+    CategorySvc["Category Service"]
     BudgetSvc["Budget Service"]
     TxSvc["Transaction Service"]
     SummarySvc["Summary Service"]
@@ -38,10 +43,14 @@ graph TD
     RateMW --> ValidateMW
     ValidateMW --> AuthMW
     AuthMW -->|"/auth/*"| AuthSvc
+    AuthMW -->|"/accounts/*"| AccountSvc
+    AuthMW -->|"/categories/*"| CategorySvc
     AuthMW -->|"/budgets/*"| BudgetSvc
     AuthMW -->|"/transactions/*"| TxSvc
     AuthMW -->|"/summaries/*"| SummarySvc
     AuthSvc --> Mongo
+    AccountSvc --> Mongo
+    CategorySvc --> Mongo
     BudgetSvc --> Mongo
     TxSvc --> Mongo
     SummarySvc --> Mongo
@@ -108,6 +117,32 @@ All endpoints are prefixed with `/api/v1`.
 | `POST` | `/auth/refresh` | No | `{refreshToken}` | 200 `{token, refreshToken}` | Rotate access token |
 | `POST` | `/auth/logout` | No | `{refreshToken}` | 204 | Revoke refresh token |
 
+### Accounts
+
+All accounts have server-generated `_id` (MongoDB ObjectId). Client does **not** provide an ID on creation.
+
+| Method | Endpoint | Auth | Body | Success | Description |
+|--------|----------|------|------|---------|-------------|
+| `POST` | `/accounts` | Yes | `{name, type, currency?, balance?, color?, icon?, isDefault?, order?}` | 201 account | Create account |
+| `GET` | `/accounts` | Yes | — | 200 `[account, ...]` | List all accounts for user |
+| `GET` | `/accounts/:id` | Yes | — | 200 account | Get single account |
+| `PATCH` | `/accounts/:id` | Yes | `{name?, type?, currency?, balance?, color?, icon?, isDefault?, order?}` | 200 account | Update account |
+| `DELETE` | `/accounts/:id` | Yes | — | 204 / 409 | Delete account (409 if in use by transactions) |
+
+**Account types:** `checking`, `savings`, `credit`, `cash`, `investment`, `other`
+
+### Categories
+
+All categories have server-generated `_id` (MongoDB ObjectId). Client does **not** provide an ID on creation.
+
+| Method | Endpoint | Auth | Body | Success | Description |
+|--------|----------|------|------|---------|-------------|
+| `POST` | `/categories` | Yes | `{name, color?, icon?, isDefault?, order?}` | 201 category | Create category |
+| `GET` | `/categories` | Yes | — | 200 `[category, ...]` | List all categories for user |
+| `GET` | `/categories/:id` | Yes | — | 200 category | Get single category |
+| `PATCH` | `/categories/:id` | Yes | `{name?, color?, icon?, isDefault?, order?}` | 200 category | Update category |
+| `DELETE` | `/categories/:id` | Yes | — | 204 / 409 | Delete category (409 if in use by budgets or transactions) |
+
 ### Budgets
 
 | Method | Endpoint | Auth | Body | Success | Description |
@@ -146,10 +181,37 @@ erDiagram
         date updatedAt
     }
 
+    ACCOUNT {
+        ObjectId _id
+        ObjectId userId "indexed"
+        string name
+        string type "checking|savings|credit|cash|investment|other"
+        string currency "default USD"
+        number balance "default 0"
+        string color "default #10b981"
+        string icon "default credit-card"
+        boolean isDefault "default false"
+        number order "default 0"
+        date createdAt
+        date updatedAt
+    }
+
+    CATEGORY {
+        ObjectId _id
+        ObjectId userId "indexed"
+        string name
+        string color "default #6366f1"
+        string icon "default wallet"
+        boolean isDefault "default false"
+        number order "default 0"
+        date createdAt
+        date updatedAt
+    }
+
     BUDGET {
         ObjectId _id
         ObjectId userId "indexed"
-        string categoryId
+        ObjectId categoryId
         string month "YYYY-MM"
         number amount
         date createdAt
@@ -174,8 +236,13 @@ erDiagram
         date updatedAt
     }
 
+    USER ||--o{ ACCOUNT : "owns"
+    USER ||--o{ CATEGORY : "owns"
     USER ||--o{ BUDGET : "owns"
     USER ||--o{ TRANSACTION : "owns"
+    ACCOUNT ||--o{ TRANSACTION : "has"
+    CATEGORY ||--o{ TRANSACTION : "categorizes"
+    CATEGORY ||--o{ BUDGET : "budgets"
 ```
 
 ### Budget Upsert Logic
@@ -306,18 +373,24 @@ personal_budget/
 │   │   ├── rateLimit.js  # Express rate limiter config
 │   │   └── validation.js # Joi body validation middleware
 │   ├── models/
+│   │   ├── account.js    # Account schema + indexes
 │   │   ├── budget.js     # Budget schema + indexes
+│   │   ├── category.js   # Category schema + indexes
 │   │   ├── transaction.js # Transaction schema + indexes
 │   │   └── user.js       # User schema + indexes
 │   ├── routes/
+│   │   ├── accounts.js   # Account CRUD
 │   │   ├── auth.js       # Register, login, refresh, logout
 │   │   ├── budgets.js    # Budget CRUD
-│   │   ├── transactions.js # Transaction CRUD
-│   │   └── summaries.js  # Monthly summary endpoint
+│   │   ├── categories.js # Category CRUD
+│   │   ├── summaries.js  # Monthly summary endpoint
+│   │   └── transactions.js # Transaction CRUD
 │   ├── services/
-│   │   ├── authService.js    # Auth business logic
-│   │   ├── budgetService.js  # Budget business logic
-│   │   ├── summaryService.js # Aggregation logic
+│   │   ├── accountService.js    # Account business logic
+│   │   ├── authService.js       # Auth business logic
+│   │   ├── budgetService.js     # Budget business logic
+│   │   ├── categoryService.js   # Category business logic
+│   │   ├── summaryService.js    # Aggregation logic
 │   │   └── transactionService.js # Transaction business logic
 │   └── lib/
 │       └── logger.js     # Winston logger
@@ -328,14 +401,19 @@ personal_budget/
 │   ├── unit/
 │   │   └── services/     # Unit tests for services
 │   ├── integration/
-│   │   └── *.test.js     # Full API integration tests
+│   │   ├── accounts.test.js
+│   │   ├── auth.test.js
+│   │   ├── budgets.test.js
+│   │   ├── categories.test.js
+│   │   ├── summaries.test.js
+│   │   └── transactions.test.js
 │   └── contract/
 │       └── *.test.js     # OpenAPI contract validation
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml        # Lint, test, gitleaks scan
 │       └── codeql-analysis.yml # Security scanning
-├── server.js             # Local server entry point (was index.js)
+├── server.js             # Local server entry point
 ├── vercel.json           # Vercel routing config
 ├── package.json
 ├── jest.config.cjs
